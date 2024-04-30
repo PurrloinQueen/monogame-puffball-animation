@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -15,6 +16,7 @@ namespace monogame_3___animating
         Vector2 tribbleGreySpeed, tribbleOrangeSpeed, tribbleCreamSpeed, tribbleBrownSpeed;
 
         Color bgColor;
+        SoundEffect tribbleNoise;
 
         Random generator = new Random();
 
@@ -61,6 +63,8 @@ namespace monogame_3___animating
             tribbleBrownTexture = Content.Load<Texture2D>("tribbleBrown");
 
             epicBackground = Content.Load<Texture2D>("pixilartducks");
+
+            tribbleNoise = Content.Load<SoundEffect>("tribble_coo");
         }
 
         protected override void Update(GameTime gameTime)
@@ -75,6 +79,7 @@ namespace monogame_3___animating
             {
                 tribbleGreySpeed.X *= -1;
                 bgColor = Color.Goldenrod;
+                tribbleNoise.Play();
             }
             tribbleRectGrey.Y += (int)tribbleGreySpeed.Y;
 
@@ -83,6 +88,7 @@ namespace monogame_3___animating
             {
                 tribbleOrangeSpeed.Y *= -1;
                 bgColor = Color.White;
+                tribbleNoise.Play();
             }
             tribbleRectOrange.Y += (int)tribbleOrangeSpeed.Y;
 
@@ -91,12 +97,14 @@ namespace monogame_3___animating
             {
                 tribbleCreamSpeed.X *= -1;
                 bgColor = Color.BlueViolet;
+                tribbleNoise.Play();
             }
             tribbleRectCream.Y += (int)tribbleCreamSpeed.Y;
             if (tribbleRectCream.Bottom > window.Height || tribbleRectCream.Y < 0)
             {
                 tribbleCreamSpeed.Y *= -1;
                 bgColor = Color.SeaShell;
+                tribbleNoise.Play();
             }
 
             tribbleRectBrown.X += (int)tribbleBrownSpeed.X;
@@ -104,12 +112,14 @@ namespace monogame_3___animating
             {
                 tribbleBrownSpeed.X *= -1;
                 bgColor = Color.Aquamarine;
+                tribbleNoise.Play();
             }
             tribbleRectBrown.Y += (int)tribbleBrownSpeed.Y;
             if (tribbleRectBrown.Bottom > window.Height || tribbleRectBrown.Y < 0)
             {
                 tribbleBrownSpeed *= -1;
                 bgColor = Color.Violet;
+                tribbleNoise.Play();
             }
 
             base.Update(gameTime);

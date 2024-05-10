@@ -6,17 +6,27 @@ using System;
 
 namespace monogame_3___animating
 {
+    enum Screen
+    {
+        Intro,
+        MainAnimation,
+        GameEnd,
+    }
+    
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Texture2D tribbleBrownTexture, tribbleCreamTexture, tribbleGreyTexture, tribbleOrangeTexture, epicBackground;
+        Texture2D tribbleBrownTexture, tribbleCreamTexture, tribbleGreyTexture, tribbleOrangeTexture, epicBackground, introBackground, endBackground;
         Rectangle tribbleRectGrey, tribbleRectOrange, tribbleRectCream, tribbleRectBrown, window, windowBackground;
         Vector2 tribbleGreySpeed, tribbleOrangeSpeed, tribbleCreamSpeed, tribbleBrownSpeed;
 
         Color bgColor;
         SoundEffect tribbleNoise;
+
+        MouseState mouseState;
+        Screen screen;
 
         Random generator = new Random();
 
@@ -44,6 +54,8 @@ namespace monogame_3___animating
 
             windowBackground = new Rectangle(0, 0, 800, 600);
 
+            screen = Screen.Intro;
+
             tribbleGreySpeed = new Vector2(1, 0);
             tribbleOrangeSpeed = new Vector2(0, 1);
             tribbleCreamSpeed = new Vector2(1, 1);
@@ -63,64 +75,91 @@ namespace monogame_3___animating
             tribbleBrownTexture = Content.Load<Texture2D>("tribbleBrown");
 
             epicBackground = Content.Load<Texture2D>("pixilartducks");
+            introBackground = Content.Load<Texture2D>("tribble_intro");
+            endBackground = Content.Load<Texture2D>("tribble-pixil");
 
             tribbleNoise = Content.Load<SoundEffect>("tribble_coo");
         }
 
         protected override void Update(GameTime gameTime)
         {
+            mouseState = Mouse.GetState();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
+            if (screen == Screen.Intro)
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    screen = Screen.MainAnimation;
+                }
+            }
+            else if (screen == Screen.MainAnimation)
+            {
+                tribbleRectGrey.X += (int)tribbleGreySpeed.X;
+                if (tribbleRectGrey.Right > window.Width || tribbleRectGrey.X < 0)
+                {
+                    tribbleGreySpeed.X *= -1;
+                    bgColor = Color.Goldenrod;
+                    tribbleNoise.Play();
+                }
+                tribbleRectGrey.Y += (int)tribbleGreySpeed.Y;
 
-            tribbleRectGrey.X += (int)tribbleGreySpeed.X;
-            if (tribbleRectGrey.Right > window.Width || tribbleRectGrey.X < 0)
-            {
-                tribbleGreySpeed.X *= -1;
-                bgColor = Color.Goldenrod;
-                tribbleNoise.Play();
-            }
-            tribbleRectGrey.Y += (int)tribbleGreySpeed.Y;
+                tribbleRectOrange.Y += (int)tribbleOrangeSpeed.Y;
+                if (tribbleRectOrange.Bottom > window.Height || tribbleRectOrange.Y < 0)
+                {
+                    tribbleOrangeSpeed.Y *= -1;
+                    bgColor = Color.White;
+                    tribbleNoise.Play();
+                }
+                tribbleRectOrange.Y += (int)tribbleOrangeSpeed.Y;
 
-            tribbleRectOrange.Y += (int)tribbleOrangeSpeed.Y;
-            if (tribbleRectOrange.Bottom > window.Height || tribbleRectOrange.Y < 0)
-            {
-                tribbleOrangeSpeed.Y *= -1;
-                bgColor = Color.White;
-                tribbleNoise.Play();
-            }
-            tribbleRectOrange.Y += (int)tribbleOrangeSpeed.Y;
+                tribbleRectCream.X += (int)tribbleCreamSpeed.X;
+                if (tribbleRectCream.Right > window.Width || tribbleRectCream.X < 0)
+                {
+                    tribbleCreamSpeed.X *= -1;
+                    bgColor = Color.BlueViolet;
+                    tribbleNoise.Play();
+                }
+                tribbleRectCream.Y += (int)tribbleCreamSpeed.Y;
+                if (tribbleRectCream.Bottom > window.Height || tribbleRectCream.Y < 0)
+                {
+                    tribbleCreamSpeed.Y *= -1;
+                    bgColor = Color.SeaShell;
+                    tribbleNoise.Play();
+                }
 
-            tribbleRectCream.X += (int)tribbleCreamSpeed.X;
-            if (tribbleRectCream.Right > window.Width || tribbleRectCream.X < 0)
-            {
-                tribbleCreamSpeed.X *= -1;
-                bgColor = Color.BlueViolet;
-                tribbleNoise.Play();
+                tribbleRectBrown.X += (int)tribbleBrownSpeed.X;
+                if (tribbleRectBrown.Right > window.Width || tribbleRectBrown.X < 0)
+                {
+                    tribbleBrownSpeed.X *= -1;
+                    bgColor = Color.Aquamarine;
+                    tribbleNoise.Play();
+                }
+                tribbleRectBrown.Y += (int)tribbleBrownSpeed.Y;
+                if (tribbleRectBrown.Bottom > window.Height || tribbleRectBrown.Y < 0)
+                {
+                    tribbleBrownSpeed *= -1;
+                    bgColor = Color.Violet;
+                    tribbleNoise.Play();
+                }
+                if (mouseState.RightButton == ButtonState.Pressed)
+                {
+                    screen = Screen.GameEnd;
+                }
             }
-            tribbleRectCream.Y += (int)tribbleCreamSpeed.Y;
-            if (tribbleRectCream.Bottom > window.Height || tribbleRectCream.Y < 0)
+            else if (screen == Screen.GameEnd)
             {
-                tribbleCreamSpeed.Y *= -1;
-                bgColor = Color.SeaShell;
+                bgColor = Color.White; 
                 tribbleNoise.Play();
+                if (mouseState.RightButton == ButtonState.Released) 
+                {
+                    Exit();
+                }
             }
-
-            tribbleRectBrown.X += (int)tribbleBrownSpeed.X;
-            if (tribbleRectBrown.Right > window.Width || tribbleRectBrown.X < 0)
-            {
-                tribbleBrownSpeed.X *= -1;
-                bgColor = Color.Aquamarine;
-                tribbleNoise.Play();
-            }
-            tribbleRectBrown.Y += (int)tribbleBrownSpeed.Y;
-            if (tribbleRectBrown.Bottom > window.Height || tribbleRectBrown.Y < 0)
-            {
-                tribbleBrownSpeed *= -1;
-                bgColor = Color.Violet;
-                tribbleNoise.Play();
-            }
+            
 
             base.Update(gameTime);
         }
@@ -133,12 +172,23 @@ namespace monogame_3___animating
 
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(epicBackground, windowBackground, bgColor);
-            _spriteBatch.Draw(tribbleGreyTexture, tribbleRectGrey, Color.White);
-            _spriteBatch.Draw(tribbleOrangeTexture, tribbleRectOrange, Color.White);
-            _spriteBatch.Draw(tribbleCreamTexture, tribbleRectCream, Color.White);
-            _spriteBatch.Draw(tribbleBrownTexture, tribbleRectBrown, Color.White);
-
+            if (screen == Screen.Intro)
+            {
+                _spriteBatch.Draw(introBackground, windowBackground, Color.White);
+            }
+            else if (screen == Screen.MainAnimation)
+            {
+                _spriteBatch.Draw(epicBackground, windowBackground, bgColor);
+                _spriteBatch.Draw(tribbleGreyTexture, tribbleRectGrey, Color.White);
+                _spriteBatch.Draw(tribbleOrangeTexture, tribbleRectOrange, Color.White);
+                _spriteBatch.Draw(tribbleCreamTexture, tribbleRectCream, Color.White);
+                _spriteBatch.Draw(tribbleBrownTexture, tribbleRectBrown, Color.White);
+            }
+            else if (screen == Screen.GameEnd)
+            {
+                _spriteBatch.Draw(endBackground, windowBackground, bgColor);
+            }
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);
